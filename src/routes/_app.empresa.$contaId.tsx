@@ -10,10 +10,12 @@ import {
   Phone,
   Radio,
   AlertTriangle,
-  ChevronRight,
+  User,
+  Siren,
 } from "lucide-react";
 import { fetchAlarmes, fetchUnidades, criticidadeLabel } from "@/lib/api";
 import { customAsUnidades, loadCustom } from "@/lib/custom-empresas";
+import { enrichLoja, descreverProblema } from "@/lib/loja-enrichment";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
