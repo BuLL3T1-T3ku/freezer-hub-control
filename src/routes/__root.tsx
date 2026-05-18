@@ -75,11 +75,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "Freezer Controle" },
       { name: "description", content: "Monitoramento e organização de refrigeração por empresa" },
       { name: "author", content: "Freezer Controle" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "Freezer Controle" },
+      { property: "og:description", content: "Monitoramento e organização de refrigeração por empresa" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Freezer Controle" },
+      { name: "twitter:description", content: "Monitoramento e organização de refrigeração por empresa" },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/0a0c5550-45a2-4cb5-86f7-73f85cc798c1/id-preview-48e4d5fe--d7bc60c4-9665-49a5-9065-453c3d17ed76.lovable.app-1779115549427.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/0a0c5550-45a2-4cb5-86f7-73f85cc798c1/id-preview-48e4d5fe--d7bc60c4-9665-49a5-9065-453c3d17ed76.lovable.app-1779115549427.png" },
     ],
     links: [
       {
