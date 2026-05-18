@@ -84,16 +84,72 @@ function EmpresaPage() {
         </div>
       </div>
 
+      {(() => {
+        const criticosAll = data.alarmes.filter((a) => a.criticidade === "A");
+        if (criticosAll.length === 0) return null;
+        return (
+          <Card className="border-destructive/40 bg-destructive/5 p-5">
+            <div className="mb-3 flex items-center gap-2 text-destructive">
+              <Siren className="h-5 w-5" />
+              <h2 className="font-semibold">
+                {criticosAll.length} alarme{criticosAll.length > 1 ? "s" : ""} crítico
+                {criticosAll.length > 1 ? "s" : ""} requer
+                {criticosAll.length > 1 ? "em" : ""} ação imediata
+              </h2>
+            </div>
+            <div className="space-y-3">
+              {criticosAll.slice(0, 10).map((a) => {
+                const loja = data.lojas.find((l) => l.lojaId === a.lojaId);
+                const en = enrichLoja(a.lojaId, loja?.endereco, loja?.telefone);
+                return (
+                  <div
+                    key={a.alarmeId}
+                    className="rounded-lg border border-destructive/30 bg-card p-4 text-sm"
+                  >
+                    <div className="flex flex-wrap items-start justify-between gap-2">
+                      <div className="font-semibold">{loja?.lojaNm ?? `Loja ${a.lojaId}`}</div>
+                      <Badge variant="destructive">há {a.tempo}</Badge>
+                    </div>
+                    <p className="mt-2 text-foreground/90">
+                      {descreverProblema(a.alarmeDesc, a.dispositivoNm, a.grupoNm, a.subgrupoNm)}
+                    </p>
+                    <div className="mt-3 grid gap-1 text-xs text-muted-foreground sm:grid-cols-2">
+                      <span className="flex items-start gap-1.5">
+                        <MapPin className="mt-0.5 h-3 w-3 shrink-0" />
+                        {en.endereco}
+                      </span>
+                      <span className="flex items-start gap-1.5">
+                        <User className="mt-0.5 h-3 w-3 shrink-0" />
+                        {en.contato} — {en.cargo}
+                      </span>
+                      <span className="flex items-start gap-1.5">
+                        <Radio className="mt-0.5 h-3 w-3 shrink-0" />
+                        {a.dispositivoNm} · {a.grupoNm}
+                      </span>
+                      <span className="flex items-start gap-1.5">
+                        <Phone className="mt-0.5 h-3 w-3 shrink-0" />
+                        {en.telefone}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </Card>
+        );
+      })()}
+
       <div className="grid gap-4">
         {data.lojas.map((l) => {
           const lojaAlarmes = alarmesPorLoja.get(l.lojaId) ?? [];
           const dispositivos = new Map<number, string>();
           lojaAlarmes.forEach((a) => dispositivos.set(a.dispositivoId, a.dispositivoNm));
           const criticos = lojaAlarmes.filter((a) => a.criticidade === "A").length;
+          const en = enrichLoja(l.lojaId, l.endereco, l.telefone);
           return (
             <Card key={l.lojaId} className="overflow-hidden p-0">
               <div className="flex items-start justify-between gap-4 border-b border-border/60 bg-muted/30 p-5">
-                <div className="min-w-0">
+                <div className="min-w-0 flex-1">
                   <h3 className="truncate text-lg font-semibold">{l.lojaNm}</h3>
                   <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-xs text-muted-foreground">
                     <span className="flex items-center gap-1">
@@ -104,18 +160,25 @@ function EmpresaPage() {
                       <Calendar className="h-3 w-3" />
                       Pedido {l.nrPedido}
                     </span>
-                    {l.endereco && (
-                      <span className="flex items-center gap-1">
-                        <MapPin className="h-3 w-3" />
-                        {l.endereco}
+                  </div>
+                  <div className="mt-3 grid gap-1.5 text-xs sm:grid-cols-2">
+                    <span className="flex items-start gap-1.5 text-foreground/80">
+                      <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
+                      {en.endereco}
+                    </span>
+                    <span className="flex items-start gap-1.5 text-foreground/80">
+                      <User className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
+                      <span>
+                        <span className="font-medium">{en.contato}</span>
+                        <span className="text-muted-foreground"> — {en.cargo}</span>
                       </span>
-                    )}
-                    {l.telefone && (
-                      <span className="flex items-center gap-1">
-                        <Phone className="h-3 w-3" />
-                        {l.telefone}
-                      </span>
-                    )}
+                    </span>
+                    <span className="flex items-start gap-1.5 text-foreground/80">
+                      <Phone className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
+                      <a href={`tel:${en.telefone.replace(/\D/g, "")}`} className="hover:underline">
+                        {en.telefone}
+                      </a>
+                    </span>
                   </div>
                 </div>
                 <div className="flex shrink-0 flex-col items-end gap-1">
