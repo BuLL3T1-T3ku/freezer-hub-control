@@ -9,11 +9,19 @@ import {
   Activity,
   ShieldCheck,
 } from "lucide-react";
-import { fetchAlarmes, fetchUnidades } from "@/api's/api";
+import { fetchAlarmes, fetchUnidades, criticidadeLabel, type Alarme } from "@/api's/api";
 import { customAsUnidades, loadCustom } from "@/api's/custom-empresas";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/_app/")({
   component: Dashboard,
@@ -29,6 +37,12 @@ function Dashboard() {
   const unidadesQ = useQuery({ queryKey: ["unidades"], queryFn: fetchUnidades });
   const alarmesQ = useQuery({ queryKey: ["alarmes"], queryFn: fetchAlarmes });
   const [q, setQ] = useState("");
+  const [showCriticos, setShowCriticos] = useState(false);
+
+  const criticosList = useMemo(
+    () => (alarmesQ.data ?? []).filter((a) => a.criticidade === "A"),
+    [alarmesQ.data],
+  );
 
   const empresas = useMemo(() => {
     const list = [...(unidadesQ.data ?? []), ...customAsUnidades(loadCustom())];
@@ -82,8 +96,31 @@ function Dashboard() {
         <StatCard icon={Building2} label="Empresas" value={totals.empresas} />
         <StatCard icon={Store} label="Lojas" value={totals.lojas} />
         <StatCard icon={Activity} label="Alarmes 30d" value={totals.alarmes} tone="warning" />
-        <StatCard icon={AlertTriangle} label="Críticos" value={totals.criticos} tone="danger" />
+        <StatCard
+          icon={AlertTriangle}
+          label="Críticos"
+          value={totals.criticos}
+          tone="danger"
+          action={
+            totals.criticos > 0 ? (
+              <Button
+                size="sm"
+                variant="destructive"
+                className="mt-2 h-7 px-2 text-xs"
+                onClick={() => setShowCriticos(true)}
+              >
+                Ver todos
+              </Button>
+            ) : null
+          }
+        />
       </div>
+
+      <CriticosDialog
+        open={showCriticos}
+        onOpenChange={setShowCriticos}
+        alarmes={criticosList}
+      />
 
       <div className="relative max-w-md">
         <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -157,11 +194,13 @@ function StatCard({
   label,
   value,
   tone,
+  action,
 }: {
   icon: React.ComponentType<{ className?: string }>;
   label: string;
   value: number;
   tone?: "warning" | "danger";
+  action?: React.ReactNode;
 }) {
   const color =
     tone === "danger"
@@ -174,11 +213,98 @@ function StatCard({
       <div className={`grid h-12 w-12 place-items-center rounded-xl ${color}`}>
         <Icon className="h-5 w-5" />
       </div>
-      <div>
+      <div className="min-w-0">
         <div className="text-2xl font-bold leading-none">{value}</div>
         <div className="mt-1 text-xs text-muted-foreground">{label}</div>
+        {action}
       </div>
     </Card>
+  );
+}
+
+function CriticosDialog({
+  open,
+  onOpenChange,
+  alarmes,
+}: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  alarmes: Alarme[];
+}) {
+  const grouped = useMemo(() => {
+    const map = new Map<number, { contaNm: string; contaId: number; items: Alarme[] }>();
+    for (const a of alarmes) {
+      if (!map.has(a.contaId)) map.set(a.contaId, { contaNm: a.contaNm, contaId: a.contaId, items: [] });
+      map.get(a.contaId)!.items.push(a);
+    }
+    return Array.from(map.values()).sort((a, b) => b.items.length - a.items.length);
+  }, [alarmes]);
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-h-[85vh] max-w-3xl overflow-hidden">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <AlertTriangle className="h-5 w-5 text-destructive" />
+            Alertas críticos ({alarmes.length})
+          </DialogTitle>
+          <DialogDescription>
+            Todos os alarmes de criticidade alta em monitoramento.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="-mx-6 max-h-[65vh] overflow-y-auto px-6">
+          {grouped.length === 0 ? (
+            <div className="py-12 text-center text-sm text-muted-foreground">
+              Nenhum alerta crítico no momento.
+            </div>
+          ) : (
+            <div className="space-y-5">
+              {grouped.map((g) => (
+                <div key={g.contaId}>
+                  <div className="mb-2 flex items-center justify-between">
+                    <Link
+                      to="/empresa/$contaId"
+                      params={{ contaId: String(g.contaId) }}
+                      onClick={() => onOpenChange(false)}
+                      className="flex items-center gap-2 text-sm font-semibold hover:text-primary"
+                    >
+                      <Building2 className="h-4 w-4 text-primary" />
+                      {g.contaNm}
+                    </Link>
+                    <Badge variant="destructive">{g.items.length}</Badge>
+                  </div>
+                  <div className="space-y-2">
+                    {g.items.map((a) => (
+                      <div
+                        key={a.alarmeId}
+                        className="rounded-lg border border-destructive/20 bg-destructive/5 p-3 text-sm"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <div className="truncate font-medium">{a.lojaNm}</div>
+                            <div className="mt-0.5 text-xs text-muted-foreground">
+                              {a.dispositivoNm} · {a.grupoNm}
+                              {a.subgrupoNm ? ` / ${a.subgrupoNm}` : ""}
+                            </div>
+                            <div className="mt-1 text-xs">{a.alarmeDesc}</div>
+                          </div>
+                          <div className="shrink-0 text-right">
+                            <Badge variant="destructive" className="text-[10px]">
+                              {criticidadeLabel(a.criticidade)}
+                            </Badge>
+                            <div className="mt-1 text-[10px] text-muted-foreground">{a.tempo}</div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 
