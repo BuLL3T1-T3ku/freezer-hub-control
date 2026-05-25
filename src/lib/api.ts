@@ -50,7 +50,17 @@ export async function fetchAlarmes(): Promise<Alarme[]> {
 
 export async function fetchTelemetria(dispositivoId: number): Promise<Telemetria> {
   const r = await fetch(base("telemetria", `&dispositivoId=${dispositivoId}`));
-  return r.json();
+  const raw = await r.json();
+  // API real retorna { datasets: [{ label, color, values, timestamps? }] }
+  // Normalizamos para { labels, datasets: [{ label, data }] }
+  const datasets = (raw?.datasets ?? []).map((d: { label?: string; data?: number[]; values?: number[] }) => ({
+    label: d.label,
+    data: (d.data ?? d.values ?? []) as number[],
+  }));
+  const len = datasets.reduce((m: number, d: { data: number[] }) => Math.max(m, d.data.length), 0);
+  const labels: string[] =
+    raw?.labels ?? raw?.timestamps ?? Array.from({ length: len }, (_, i) => String(i + 1));
+  return { labels, datasets };
 }
 
 export interface AbrirChamadoPayload {
