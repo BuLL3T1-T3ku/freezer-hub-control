@@ -96,8 +96,31 @@ function Dashboard() {
         <StatCard icon={Building2} label="Empresas" value={totals.empresas} />
         <StatCard icon={Store} label="Lojas" value={totals.lojas} />
         <StatCard icon={Activity} label="Alarmes 30d" value={totals.alarmes} tone="warning" />
-        <StatCard icon={AlertTriangle} label="Críticos" value={totals.criticos} tone="danger" />
+        <StatCard
+          icon={AlertTriangle}
+          label="Críticos"
+          value={totals.criticos}
+          tone="danger"
+          action={
+            totals.criticos > 0 ? (
+              <Button
+                size="sm"
+                variant="destructive"
+                className="mt-2 h-7 px-2 text-xs"
+                onClick={() => setShowCriticos(true)}
+              >
+                Ver todos
+              </Button>
+            ) : null
+          }
+        />
       </div>
+
+      <CriticosDialog
+        open={showCriticos}
+        onOpenChange={setShowCriticos}
+        alarmes={criticosList}
+      />
 
       <div className="relative max-w-md">
         <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
