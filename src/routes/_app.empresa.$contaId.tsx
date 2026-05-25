@@ -101,7 +101,7 @@ function EmpresaPage() {
               </h2>
             </div>
             <div className="space-y-3">
-              {criticosAll.slice(0, 10).map((a) => {
+              {criticosAll.slice(0, showAllCriticos ? undefined : 10).map((a) => {
                 const loja = data.lojas.find((l) => l.lojaId === a.lojaId);
                 const en = enrichLoja(a.lojaId, loja?.endereco, loja?.telefone);
                 return (
