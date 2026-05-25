@@ -9,11 +9,19 @@ import {
   Activity,
   ShieldCheck,
 } from "lucide-react";
-import { fetchAlarmes, fetchUnidades } from "@/api's/api";
+import { fetchAlarmes, fetchUnidades, criticidadeLabel, type Alarme } from "@/api's/api";
 import { customAsUnidades, loadCustom } from "@/api's/custom-empresas";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/_app/")({
   component: Dashboard,
