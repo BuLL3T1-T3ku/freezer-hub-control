@@ -9,8 +9,8 @@ import {
   Activity,
   ShieldCheck,
 } from "lucide-react";
-import { fetchAlarmes, fetchUnidades } from "@/lib/api";
-import { customAsUnidades, loadCustom } from "@/lib/custom-empresas";
+import { fetchAlarmes, fetchUnidades } from "@/api's/api";
+import { customAsUnidades, loadCustom } from "@/api's/custom-empresas";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";

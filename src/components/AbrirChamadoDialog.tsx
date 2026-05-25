@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { abrirChamado } from "@/lib/api";
+import { abrirChamado } from "@/api's/api";
 
 interface Data {
   lojaId: number;
