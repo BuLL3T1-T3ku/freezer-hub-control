@@ -6,7 +6,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { fetchTelemetria } from "@/lib/api";
+import { fetchTelemetria } from "@/api's/api";
 import {
   ResponsiveContainer,
   LineChart,

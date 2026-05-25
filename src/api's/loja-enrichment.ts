@@ -103,9 +103,9 @@ export function enrichLoja(lojaId: number, fallbackEndereco?: string | null, fal
   const cargo = CARGOS[(h1 ^ h3) % CARGOS.length];
 
   const ddd = 11;
-  const p1 = String(90000 + (h2 % 9999)).slice(0, 5);
+  const p1 = String(90000 + (h2 % 9999)).slice(1, 6);
   const p2 = String(1000 + (h3 % 8999)).slice(0, 4);
-  const telefone = fallbackTelefone?.trim() || `(${ddd}) 9${p1.slice(1)}-${p2}`;
+  const telefone = fallbackTelefone?.trim() || `(${ddd}) 9${p1}-${p2}`;
 
   return { endereco, contato: nome, cargo, telefone };
 }

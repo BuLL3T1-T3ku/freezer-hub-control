@@ -13,9 +13,9 @@ import {
   User,
   Siren,
 } from "lucide-react";
-import { fetchAlarmes, fetchUnidades, criticidadeLabel } from "@/lib/api";
-import { customAsUnidades, loadCustom } from "@/lib/custom-empresas";
-import { enrichLoja, descreverProblema } from "@/lib/loja-enrichment";
+import { fetchAlarmes, fetchUnidades, criticidadeLabel } from "@/api's/api";
+import { customAsUnidades, loadCustom } from "@/api's/custom-empresas";
+import { enrichLoja, descreverProblema } from "@/api's/loja-enrichment";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
