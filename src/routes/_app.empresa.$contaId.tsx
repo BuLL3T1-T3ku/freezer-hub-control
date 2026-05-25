@@ -137,6 +137,26 @@ function EmpresaPage() {
                   </div>
                 );
               })}
+              {criticosAll.length > 10 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full border-destructive/30 text-destructive hover:bg-destructive/10"
+                  onClick={() => setShowAllCriticos((v) => !v)}
+                >
+                  {showAllCriticos ? (
+                    <>
+                      <ChevronUp className="mr-2 h-4 w-4" />
+                      Recolher alertas
+                    </>
+                  ) : (
+                    <>
+                      <ChevronDown className="mr-2 h-4 w-4" />
+                      Ver todos os {criticosAll.length} alertas críticos
+                    </>
+                  )}
+                </Button>
+              )}
             </div>
           </Card>
         );
