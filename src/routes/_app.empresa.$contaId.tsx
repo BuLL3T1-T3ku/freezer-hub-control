@@ -42,6 +42,7 @@ function EmpresaPage() {
     tag: string;
     motivoIA: string;
   } | null>(null);
+  const [showAllCriticos, setShowAllCriticos] = useState(false);
 
   const data = useMemo(() => {
     const todas = [...(unidadesQ.data ?? []), ...customAsUnidades(loadCustom())];
