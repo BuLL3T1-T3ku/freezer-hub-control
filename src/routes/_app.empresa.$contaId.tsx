@@ -12,6 +12,8 @@ import {
   AlertTriangle,
   User,
   Siren,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { fetchAlarmes, fetchUnidades, criticidadeLabel } from "@/api's/api";
 import { customAsUnidades, loadCustom } from "@/api's/custom-empresas";
@@ -40,6 +42,7 @@ function EmpresaPage() {
     tag: string;
     motivoIA: string;
   } | null>(null);
+  const [showAllCriticos, setShowAllCriticos] = useState(false);
 
   const data = useMemo(() => {
     const todas = [...(unidadesQ.data ?? []), ...customAsUnidades(loadCustom())];
@@ -98,7 +101,7 @@ function EmpresaPage() {
               </h2>
             </div>
             <div className="space-y-3">
-              {criticosAll.slice(0, 10).map((a) => {
+              {criticosAll.slice(0, showAllCriticos ? undefined : 10).map((a) => {
                 const loja = data.lojas.find((l) => l.lojaId === a.lojaId);
                 const en = enrichLoja(a.lojaId, loja?.endereco, loja?.telefone);
                 return (
@@ -134,6 +137,26 @@ function EmpresaPage() {
                   </div>
                 );
               })}
+              {criticosAll.length > 10 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full border-destructive/30 text-destructive hover:bg-destructive/10"
+                  onClick={() => setShowAllCriticos((v) => !v)}
+                >
+                  {showAllCriticos ? (
+                    <>
+                      <ChevronUp className="mr-2 h-4 w-4" />
+                      Recolher alertas
+                    </>
+                  ) : (
+                    <>
+                      <ChevronDown className="mr-2 h-4 w-4" />
+                      Ver todos os {criticosAll.length} alertas críticos
+                    </>
+                  )}
+                </Button>
+              )}
             </div>
           </Card>
         );
