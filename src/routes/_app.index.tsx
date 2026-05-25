@@ -37,6 +37,12 @@ function Dashboard() {
   const unidadesQ = useQuery({ queryKey: ["unidades"], queryFn: fetchUnidades });
   const alarmesQ = useQuery({ queryKey: ["alarmes"], queryFn: fetchAlarmes });
   const [q, setQ] = useState("");
+  const [showCriticos, setShowCriticos] = useState(false);
+
+  const criticosList = useMemo(
+    () => (alarmesQ.data ?? []).filter((a) => a.criticidade === "A"),
+    [alarmesQ.data],
+  );
 
   const empresas = useMemo(() => {
     const list = [...(unidadesQ.data ?? []), ...customAsUnidades(loadCustom())];
