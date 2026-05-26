@@ -369,8 +369,18 @@ function ChartView({
 }: {
   data: { nome: string; Críticos: number; Outros: number }[];
 }) {
-  // recharts importado dinamicamente para manter o topo do arquivo enxuto
-  // (mas aqui usamos import estático abaixo)
-  return <BarsImpl data={data} />;
+  return (
+    <ResponsiveContainer width="100%" height="100%">
+      <BarChart data={data} margin={{ top: 5, right: 12, left: -8, bottom: 0 }}>
+        <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.92 0.02 225)" />
+        <XAxis dataKey="nome" tick={{ fontSize: 10 }} interval={0} angle={-15} textAnchor="end" height={50} />
+        <YAxis tick={{ fontSize: 10 }} allowDecimals={false} />
+        <Tooltip />
+        <Legend wrapperStyle={{ fontSize: 11 }} />
+        <Bar dataKey="Críticos" stackId="a" fill="oklch(0.6 0.22 25)" radius={[0, 0, 0, 0]} />
+        <Bar dataKey="Outros" stackId="a" fill="oklch(0.75 0.18 70)" radius={[4, 4, 0, 0]} />
+      </BarChart>
+    </ResponsiveContainer>
+  );
 }
 
