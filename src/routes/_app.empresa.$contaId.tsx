@@ -314,6 +314,35 @@ function EmpresaPage() {
         onOpenChange={(o) => !o && setChamado(null)}
         data={chamado}
       />
+      <IncidenteDialog
+        open={!!incidente}
+        onOpenChange={(o) => !o && setIncidente(null)}
+        alarme={incidente}
+        onWhatsApp={(tempAtual) => {
+          if (incidente) {
+            setWhats({ alarme: incidente, tempAtual });
+            setIncidente(null);
+          }
+        }}
+      />
+      {whats && (() => {
+        const loja = data.lojas.find((l) => l.lojaId === whats.alarme.lojaId);
+        const en = enrichLoja(whats.alarme.lojaId, loja?.endereco, loja?.telefone);
+        return (
+          <WhatsAppQRDialog
+            open={!!whats}
+            onOpenChange={(o) => !o && setWhats(null)}
+            contaId={id}
+            contaNm={data.nome}
+            lojaNm={loja?.lojaNm ?? `Loja ${whats.alarme.lojaId}`}
+            endereco={en.endereco}
+            alarmeDesc={whats.alarme.alarmeDesc}
+            dispositivoNm={whats.alarme.dispositivoNm}
+            telefoneContato={en.telefone}
+            tempAtual={whats.tempAtual}
+          />
+        );
+      })()}
     </div>
   );
 }
