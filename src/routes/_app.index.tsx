@@ -323,3 +323,44 @@ function Mini({ label, value, tone }: { label: string; value: number; tone?: "da
     </div>
   );
 }
+
+function CriticosChart({
+  empresas,
+}: {
+  empresas: { contaNm: string; alarmes: number; criticos: number }[];
+}) {
+  const data = empresas
+    .filter((e) => e.alarmes > 0)
+    .sort((a, b) => b.criticos - a.criticos || b.alarmes - a.alarmes)
+    .slice(0, 8)
+    .map((e) => ({
+      nome: e.contaNm.length > 18 ? e.contaNm.slice(0, 16) + "…" : e.contaNm,
+      Críticos: e.criticos,
+      Outros: Math.max(0, e.alarmes - e.criticos),
+    }));
+  if (data.length === 0) return null;
+  return (
+    <Card className="p-5">
+      <div className="mb-3">
+        <h2 className="text-sm font-semibold">Alarmes por empresa (top 8)</h2>
+        <p className="text-xs text-muted-foreground">
+          Distribuição entre alarmes críticos e demais ocorrências.
+        </p>
+      </div>
+      <div className="h-64 w-full">
+        <ChartView data={data} />
+      </div>
+    </Card>
+  );
+}
+
+function ChartView({
+  data,
+}: {
+  data: { nome: string; Críticos: number; Outros: number }[];
+}) {
+  // recharts importado dinamicamente para manter o topo do arquivo enxuto
+  // (mas aqui usamos import estático abaixo)
+  return <BarsImpl data={data} />;
+}
+
