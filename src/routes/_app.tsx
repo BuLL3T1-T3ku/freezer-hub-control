@@ -55,6 +55,7 @@ function AppLayout() {
         <Outlet />
       </main>
       <Toaster richColors position="top-right" />
+      <Chatbot />
     </div>
   );
 }
