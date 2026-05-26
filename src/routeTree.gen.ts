@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as AppIndexRouteImport } from './routes/_app.index'
+import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AppAdminRouteImport } from './routes/_app.admin'
 import { Route as ApiProxySplatRouteImport } from './routes/api/proxy.$'
 import { Route as AppEmpresaContaIdRouteImport } from './routes/_app.empresa.$contaId'
@@ -23,6 +24,11 @@ const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AppRoute,
+} as any)
+const ApiChatRoute = ApiChatRouteImport.update({
+  id: '/api/chat',
+  path: '/api/chat',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AppAdminRoute = AppAdminRouteImport.update({
   id: '/admin',
@@ -43,11 +49,13 @@ const AppEmpresaContaIdRoute = AppEmpresaContaIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
   '/admin': typeof AppAdminRoute
+  '/api/chat': typeof ApiChatRoute
   '/empresa/$contaId': typeof AppEmpresaContaIdRoute
   '/api/proxy/$': typeof ApiProxySplatRoute
 }
 export interface FileRoutesByTo {
   '/admin': typeof AppAdminRoute
+  '/api/chat': typeof ApiChatRoute
   '/': typeof AppIndexRoute
   '/empresa/$contaId': typeof AppEmpresaContaIdRoute
   '/api/proxy/$': typeof ApiProxySplatRoute
@@ -56,19 +64,21 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_app': typeof AppRouteWithChildren
   '/_app/admin': typeof AppAdminRoute
+  '/api/chat': typeof ApiChatRoute
   '/_app/': typeof AppIndexRoute
   '/_app/empresa/$contaId': typeof AppEmpresaContaIdRoute
   '/api/proxy/$': typeof ApiProxySplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/empresa/$contaId' | '/api/proxy/$'
+  fullPaths: '/' | '/admin' | '/api/chat' | '/empresa/$contaId' | '/api/proxy/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/admin' | '/' | '/empresa/$contaId' | '/api/proxy/$'
+  to: '/admin' | '/api/chat' | '/' | '/empresa/$contaId' | '/api/proxy/$'
   id:
     | '__root__'
     | '/_app'
     | '/_app/admin'
+    | '/api/chat'
     | '/_app/'
     | '/_app/empresa/$contaId'
     | '/api/proxy/$'
@@ -76,6 +86,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren
+  ApiChatRoute: typeof ApiChatRoute
   ApiProxySplatRoute: typeof ApiProxySplatRoute
 }
 
@@ -94,6 +105,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/api/chat': {
+      id: '/api/chat'
+      path: '/api/chat'
+      fullPath: '/api/chat'
+      preLoaderRoute: typeof ApiChatRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_app/admin': {
       id: '/_app/admin'
@@ -135,6 +153,7 @@ const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
+  ApiChatRoute: ApiChatRoute,
   ApiProxySplatRoute: ApiProxySplatRoute,
 }
 export const routeTree = rootRouteImport
