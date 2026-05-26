@@ -23,6 +23,16 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { ParametrosPanel } from "@/components/ParametrosPanel";
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+  Legend,
+} from "recharts";
 
 export const Route = createFileRoute("/_app/")({
   component: Dashboard,
