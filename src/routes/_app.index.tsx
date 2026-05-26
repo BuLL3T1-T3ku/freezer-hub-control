@@ -22,6 +22,17 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import { ParametrosPanel } from "@/components/ParametrosPanel";
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+  Legend,
+} from "recharts";
 
 export const Route = createFileRoute("/_app/")({
   component: Dashboard,
@@ -116,11 +127,15 @@ function Dashboard() {
         />
       </div>
 
+      <CriticosChart empresas={empresas} />
+
       <CriticosDialog
         open={showCriticos}
         onOpenChange={setShowCriticos}
         alarmes={criticosList}
       />
+
+      <ParametrosPanel />
 
       <div className="relative max-w-md">
         <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -318,3 +333,54 @@ function Mini({ label, value, tone }: { label: string; value: number; tone?: "da
     </div>
   );
 }
+
+function CriticosChart({
+  empresas,
+}: {
+  empresas: { contaNm: string; alarmes: number; criticos: number }[];
+}) {
+  const data = empresas
+    .filter((e) => e.alarmes > 0)
+    .sort((a, b) => b.criticos - a.criticos || b.alarmes - a.alarmes)
+    .slice(0, 8)
+    .map((e) => ({
+      nome: e.contaNm.length > 18 ? e.contaNm.slice(0, 16) + "…" : e.contaNm,
+      Críticos: e.criticos,
+      Outros: Math.max(0, e.alarmes - e.criticos),
+    }));
+  if (data.length === 0) return null;
+  return (
+    <Card className="p-5">
+      <div className="mb-3">
+        <h2 className="text-sm font-semibold">Alarmes por empresa (top 8)</h2>
+        <p className="text-xs text-muted-foreground">
+          Distribuição entre alarmes críticos e demais ocorrências.
+        </p>
+      </div>
+      <div className="h-64 w-full">
+        <ChartView data={data} />
+      </div>
+    </Card>
+  );
+}
+
+function ChartView({
+  data,
+}: {
+  data: { nome: string; Críticos: number; Outros: number }[];
+}) {
+  return (
+    <ResponsiveContainer width="100%" height="100%">
+      <BarChart data={data} margin={{ top: 5, right: 12, left: -8, bottom: 0 }}>
+        <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.92 0.02 225)" />
+        <XAxis dataKey="nome" tick={{ fontSize: 10 }} interval={0} angle={-15} textAnchor="end" height={50} />
+        <YAxis tick={{ fontSize: 10 }} allowDecimals={false} />
+        <Tooltip />
+        <Legend wrapperStyle={{ fontSize: 11 }} />
+        <Bar dataKey="Críticos" stackId="a" fill="oklch(0.6 0.22 25)" radius={[0, 0, 0, 0]} />
+        <Bar dataKey="Outros" stackId="a" fill="oklch(0.75 0.18 70)" radius={[4, 4, 0, 0]} />
+      </BarChart>
+    </ResponsiveContainer>
+  );
+}
+

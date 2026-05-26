@@ -15,7 +15,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
-import { fetchAlarmes, fetchUnidades, criticidadeLabel } from "@/api's/api";
+import { fetchAlarmes, fetchUnidades, criticidadeLabel, type Alarme } from "@/api's/api";
 import { customAsUnidades, loadCustom } from "@/api's/custom-empresas";
 import { enrichLoja, descreverProblema } from "@/api's/loja-enrichment";
 import { Card } from "@/components/ui/card";
@@ -23,6 +23,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TelemetriaDialog } from "@/components/TelemetriaDialog";
 import { AbrirChamadoDialog } from "@/components/AbrirChamadoDialog";
+import { IncidenteDialog } from "@/components/IncidenteDialog";
+import { WhatsAppQRDialog } from "@/components/WhatsAppQRDialog";
+import { MessageCircle } from "lucide-react";
 
 export const Route = createFileRoute("/_app/empresa/$contaId")({
   component: EmpresaPage,
@@ -43,6 +46,8 @@ function EmpresaPage() {
     motivoIA: string;
   } | null>(null);
   const [showAllCriticos, setShowAllCriticos] = useState(false);
+  const [incidente, setIncidente] = useState<Alarme | null>(null);
+  const [whats, setWhats] = useState<{ alarme: Alarme; tempAtual?: number } | null>(null);
 
   const data = useMemo(() => {
     const todas = [...(unidadesQ.data ?? []), ...customAsUnidades(loadCustom())];
@@ -110,7 +115,12 @@ function EmpresaPage() {
                     className="rounded-lg border border-destructive/30 bg-card p-4 text-sm"
                   >
                     <div className="flex flex-wrap items-start justify-between gap-2">
-                      <div className="font-semibold">{loja?.lojaNm ?? `Loja ${a.lojaId}`}</div>
+                      <button
+                        onClick={() => setIncidente(a)}
+                        className="text-left font-semibold hover:text-destructive hover:underline"
+                      >
+                        {loja?.lojaNm ?? `Loja ${a.lojaId}`}
+                      </button>
                       <Badge variant="destructive">há {a.tempo}</Badge>
                     </div>
                     <p className="mt-2 text-foreground/90">
@@ -133,6 +143,19 @@ function EmpresaPage() {
                         <Phone className="mt-0.5 h-3 w-3 shrink-0" />
                         {en.telefone}
                       </span>
+                    </div>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <Button size="sm" variant="outline" onClick={() => setIncidente(a)}>
+                        Ver incidente
+                      </Button>
+                      <Button
+                        size="sm"
+                        className="bg-[oklch(0.65_0.16_150)] hover:bg-[oklch(0.6_0.16_150)]"
+                        onClick={() => setWhats({ alarme: a })}
+                      >
+                        <MessageCircle className="mr-1 h-3 w-3" />
+                        QR WhatsApp
+                      </Button>
                     </div>
                   </div>
                 );
@@ -291,6 +314,35 @@ function EmpresaPage() {
         onOpenChange={(o) => !o && setChamado(null)}
         data={chamado}
       />
+      <IncidenteDialog
+        open={!!incidente}
+        onOpenChange={(o) => !o && setIncidente(null)}
+        alarme={incidente}
+        onWhatsApp={(tempAtual) => {
+          if (incidente) {
+            setWhats({ alarme: incidente, tempAtual });
+            setIncidente(null);
+          }
+        }}
+      />
+      {whats && (() => {
+        const loja = data.lojas.find((l) => l.lojaId === whats.alarme.lojaId);
+        const en = enrichLoja(whats.alarme.lojaId, loja?.endereco, loja?.telefone);
+        return (
+          <WhatsAppQRDialog
+            open={!!whats}
+            onOpenChange={(o) => !o && setWhats(null)}
+            contaId={id}
+            contaNm={data.nome}
+            lojaNm={loja?.lojaNm ?? `Loja ${whats.alarme.lojaId}`}
+            endereco={en.endereco}
+            alarmeDesc={whats.alarme.alarmeDesc}
+            dispositivoNm={whats.alarme.dispositivoNm}
+            telefoneContato={en.telefone}
+            tempAtual={whats.tempAtual}
+          />
+        );
+      })()}
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import { Link, Outlet, createFileRoute, useRouterState } from "@tanstack/react-router";
 import { Snowflake, LayoutDashboard, Settings } from "lucide-react";
 import { Toaster } from "@/components/ui/sonner";
+import { Chatbot } from "@/components/Chatbot";
 
 export const Route = createFileRoute("/_app")({
   component: AppLayout,
@@ -54,6 +55,7 @@ function AppLayout() {
         <Outlet />
       </main>
       <Toaster richColors position="top-right" />
+      <Chatbot />
     </div>
   );
 }
