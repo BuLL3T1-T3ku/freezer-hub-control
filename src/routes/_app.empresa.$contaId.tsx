@@ -115,7 +115,12 @@ function EmpresaPage() {
                     className="rounded-lg border border-destructive/30 bg-card p-4 text-sm"
                   >
                     <div className="flex flex-wrap items-start justify-between gap-2">
-                      <div className="font-semibold">{loja?.lojaNm ?? `Loja ${a.lojaId}`}</div>
+                      <button
+                        onClick={() => setIncidente(a)}
+                        className="text-left font-semibold hover:text-destructive hover:underline"
+                      >
+                        {loja?.lojaNm ?? `Loja ${a.lojaId}`}
+                      </button>
                       <Badge variant="destructive">há {a.tempo}</Badge>
                     </div>
                     <p className="mt-2 text-foreground/90">
@@ -138,6 +143,19 @@ function EmpresaPage() {
                         <Phone className="mt-0.5 h-3 w-3 shrink-0" />
                         {en.telefone}
                       </span>
+                    </div>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <Button size="sm" variant="outline" onClick={() => setIncidente(a)}>
+                        Ver incidente
+                      </Button>
+                      <Button
+                        size="sm"
+                        className="bg-[oklch(0.65_0.16_150)] hover:bg-[oklch(0.6_0.16_150)]"
+                        onClick={() => setWhats({ alarme: a })}
+                      >
+                        <MessageCircle className="mr-1 h-3 w-3" />
+                        QR WhatsApp
+                      </Button>
                     </div>
                   </div>
                 );
