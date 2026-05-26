@@ -117,6 +117,8 @@ function Dashboard() {
         />
       </div>
 
+      <CriticosChart empresas={empresas} />
+
       <CriticosDialog
         open={showCriticos}
         onOpenChange={setShowCriticos}
