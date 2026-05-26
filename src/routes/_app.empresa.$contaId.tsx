@@ -46,6 +46,8 @@ function EmpresaPage() {
     motivoIA: string;
   } | null>(null);
   const [showAllCriticos, setShowAllCriticos] = useState(false);
+  const [incidente, setIncidente] = useState<Alarme | null>(null);
+  const [whats, setWhats] = useState<{ alarme: Alarme; tempAtual?: number } | null>(null);
 
   const data = useMemo(() => {
     const todas = [...(unidadesQ.data ?? []), ...customAsUnidades(loadCustom())];
