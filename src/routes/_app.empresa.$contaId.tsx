@@ -15,7 +15,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
-import { fetchAlarmes, fetchUnidades, criticidadeLabel } from "@/api's/api";
+import { fetchAlarmes, fetchUnidades, criticidadeLabel, type Alarme } from "@/api's/api";
 import { customAsUnidades, loadCustom } from "@/api's/custom-empresas";
 import { enrichLoja, descreverProblema } from "@/api's/loja-enrichment";
 import { Card } from "@/components/ui/card";
@@ -23,6 +23,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TelemetriaDialog } from "@/components/TelemetriaDialog";
 import { AbrirChamadoDialog } from "@/components/AbrirChamadoDialog";
+import { IncidenteDialog } from "@/components/IncidenteDialog";
+import { WhatsAppQRDialog } from "@/components/WhatsAppQRDialog";
+import { MessageCircle } from "lucide-react";
 
 export const Route = createFileRoute("/_app/empresa/$contaId")({
   component: EmpresaPage,
