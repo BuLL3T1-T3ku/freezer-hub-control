@@ -22,6 +22,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import { ParametrosPanel } from "@/components/ParametrosPanel";
 
 export const Route = createFileRoute("/_app/")({
   component: Dashboard,
