@@ -250,6 +250,9 @@ function CriticosDialog({
   onOpenChange: (v: boolean) => void;
   alarmes: Alarme[];
 }) {
+  const [incidente, setIncidente] = useState<Alarme | null>(null);
+  const [whats, setWhats] = useState<{ a: Alarme; temp?: number } | null>(null);
+
   const grouped = useMemo(() => {
     const map = new Map<number, { contaNm: string; contaId: number; items: Alarme[] }>();
     for (const a of alarmes) {
