@@ -23,6 +23,10 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { ParametrosPanel } from "@/components/ParametrosPanel";
+import { IncidenteDialog } from "@/components/IncidenteDialog";
+import { WhatsAppQRDialog } from "@/components/WhatsAppQRDialog";
+import { enrichLoja } from "@/api's/loja-enrichment";
+import { Thermometer, MessageCircle } from "lucide-react";
 import {
   ResponsiveContainer,
   BarChart,
