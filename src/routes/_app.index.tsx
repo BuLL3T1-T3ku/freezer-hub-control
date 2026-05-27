@@ -317,6 +317,25 @@ function CriticosDialog({
                             <div className="mt-1 text-[10px] text-muted-foreground">{a.tempo}</div>
                           </div>
                         </div>
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-7 px-2 text-xs"
+                            onClick={() => setIncidente(a)}
+                          >
+                            <Thermometer className="mr-1 h-3 w-3" />
+                            Ver temperatura
+                          </Button>
+                          <Button
+                            size="sm"
+                            className="h-7 bg-[oklch(0.65_0.16_150)] px-2 text-xs hover:bg-[oklch(0.6_0.16_150)]"
+                            onClick={() => setWhats({ a })}
+                          >
+                            <MessageCircle className="mr-1 h-3 w-3" />
+                            QR WhatsApp
+                          </Button>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -326,6 +345,31 @@ function CriticosDialog({
           )}
         </div>
       </DialogContent>
+      <IncidenteDialog
+        open={!!incidente}
+        onOpenChange={(o) => !o && setIncidente(null)}
+        alarme={incidente}
+        onWhatsApp={(temp) => {
+          if (incidente) {
+            setWhats({ a: incidente, temp });
+            setIncidente(null);
+          }
+        }}
+      />
+      {whats && (
+        <WhatsAppQRDialog
+          open={!!whats}
+          onOpenChange={(o) => !o && setWhats(null)}
+          contaId={whats.a.contaId}
+          contaNm={whats.a.contaNm}
+          lojaNm={whats.a.lojaNm}
+          endereco={enrichLoja(whats.a.lojaId).endereco}
+          telefoneContato={enrichLoja(whats.a.lojaId).telefone}
+          alarmeDesc={whats.a.alarmeDesc}
+          dispositivoNm={whats.a.dispositivoNm}
+          tempAtual={whats.temp}
+        />
+      )}
     </Dialog>
   );
 }
