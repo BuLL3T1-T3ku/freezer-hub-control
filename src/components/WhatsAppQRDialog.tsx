@@ -34,6 +34,7 @@ export function WhatsAppQRDialog({
   endereco,
   alarmeDesc,
   dispositivoNm,
+  telefoneContato,
   tempAtual,
 }: Props) {
   const [qr, setQr] = useState<string>("");
