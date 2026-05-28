@@ -25,9 +25,9 @@ interface Props {
 }
 
 function formatPhone(t?: string) {
-  if (!t) return "5511999990000";
+  if (!t) return "5541998996206";
   const d = t.replace(/\D/g, "");
-  if (d.length < 10) return "5511999990000";
+  if (d.length < 10) return "5541998996206";
   // adiciona 55 se não tiver
   return d.startsWith("55") ? d : `55${d}`;
 }
