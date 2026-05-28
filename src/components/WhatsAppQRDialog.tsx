@@ -8,7 +8,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, ExternalLink } from "lucide-react";
+import { MessageCircle, ExternalLink, Copy, Check } from "lucide-react";
 
 interface Props {
   open: boolean;
@@ -19,18 +19,11 @@ interface Props {
   endereco: string;
   alarmeDesc: string;
   dispositivoNm: string;
-  // Telefone do responsável (com ou sem máscara); se vier inválido cai num número padrão.
   telefoneContato?: string;
   tempAtual?: number;
 }
 
-function formatPhone(t?: string) {
-  if (!t) return "5511999990000";
-  const d = t.replace(/\D/g, "");
-  if (d.length < 10) return "5511999990000";
-  // adiciona 55 se não tiver
-  return d.startsWith("55") ? d : `55${d}`;
-}
+const GRUPO_URL = "https://chat.whatsapp.com/GTaXxObr72Z6rhDhTC1BNN?mode=gi_t";
 
 export function WhatsAppQRDialog({
   open,
@@ -45,8 +38,8 @@ export function WhatsAppQRDialog({
   tempAtual,
 }: Props) {
   const [qr, setQr] = useState<string>("");
+  const [copied, setCopied] = useState(false);
 
-  const fone = formatPhone(telefoneContato);
   const msg =
     `🚨 *Alerta crítico — Freezer Controle*\n` +
     `Empresa: ${contaNm} (ID ${contaId})\n` +
@@ -57,12 +50,20 @@ export function WhatsAppQRDialog({
     `Problema: ${alarmeDesc}\n\n` +
     `Favor verificar e responder com previsão de atendimento.`;
 
-  const url = `https://wa.me/${fone}?text=${encodeURIComponent(msg)}`;
-
   useEffect(() => {
     if (!open) return;
-    QRCode.toDataURL(url, { width: 256, margin: 1 }).then(setQr).catch(() => setQr(""));
-  }, [open, url]);
+    QRCode.toDataURL(GRUPO_URL, { width: 256, margin: 1 }).then(setQr).catch(() => setQr(""));
+  }, [open]);
+
+  async function copyMsg() {
+    try {
+      await navigator.clipboard.writeText(msg);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // ignore
+    }
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -70,10 +71,10 @@ export function WhatsAppQRDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <MessageCircle className="h-5 w-5 text-[oklch(0.65_0.16_150)]" />
-            Enviar alerta por WhatsApp
+            Enviar alerta para o grupo WhatsApp
           </DialogTitle>
           <DialogDescription>
-            Escaneie o QR com o celular para abrir a conversa já preenchida.
+            Escaneie o QR para entrar no grupo. Depois, cole a mensagem pronta abaixo.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
@@ -86,17 +87,29 @@ export function WhatsAppQRDialog({
               </div>
             )}
           </div>
-          <div className="rounded-md border border-border/60 bg-muted/40 p-3 text-xs">
-            <div><span className="font-semibold">Para:</span> {fone}</div>
-            <div className="mt-1"><span className="font-semibold">Loja:</span> {lojaNm}</div>
-            <div><span className="font-semibold">Empresa:</span> {contaNm} (ID {contaId})</div>
-          </div>
           <Button asChild className="w-full">
-            <a href={url} target="_blank" rel="noreferrer">
+            <a href={GRUPO_URL} target="_blank" rel="noreferrer">
               <ExternalLink className="mr-2 h-4 w-4" />
-              Abrir WhatsApp Web
+              Abrir grupo no WhatsApp
             </a>
           </Button>
+          <div className="rounded-md border border-border/60 bg-muted/40 p-3 text-xs space-y-1">
+            <div><span className="font-semibold">Loja:</span> {lojaNm}</div>
+            <div><span className="font-semibold">Empresa:</span> {contaNm} (ID {contaId})</div>
+            <div><span className="font-semibold">Contato:</span> {telefoneContato ?? "—"}</div>
+          </div>
+          <div className="rounded-md border border-border/60 bg-card p-3">
+            <div className="mb-2 flex items-center justify-between">
+              <span className="text-xs font-semibold text-muted-foreground">Mensagem pronta</span>
+              <Button size="sm" variant="ghost" className="h-6 gap-1 text-xs" onClick={copyMsg}>
+                {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                {copied ? "Copiado" : "Copiar"}
+              </Button>
+            </div>
+            <pre className="max-h-40 overflow-auto whitespace-pre-wrap break-words rounded bg-muted/40 p-2 text-[11px] text-foreground/80">
+              {msg}
+            </pre>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
