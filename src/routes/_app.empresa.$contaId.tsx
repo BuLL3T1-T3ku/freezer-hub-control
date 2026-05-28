@@ -338,7 +338,6 @@ function EmpresaPage() {
             endereco={en.endereco}
             alarmeDesc={whats.alarme.alarmeDesc}
             dispositivoNm={whats.alarme.dispositivoNm}
-            telefoneContato={en.telefone}
             tempAtual={whats.tempAtual}
           />
         );
