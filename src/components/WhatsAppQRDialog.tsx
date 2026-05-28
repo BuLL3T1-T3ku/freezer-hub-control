@@ -50,10 +50,12 @@ export function WhatsAppQRDialog({
     `Problema: ${alarmeDesc}\n\n` +
     `Favor verificar e responder com previsão de atendimento.`;
 
+  // QR encodes the alert message itself — scanning with any camera/QR app
+  // copies the ready-to-send text. User then opens the group and pastes.
   useEffect(() => {
     if (!open) return;
-    QRCode.toDataURL(GRUPO_URL, { width: 256, margin: 1 }).then(setQr).catch(() => setQr(""));
-  }, [open]);
+    QRCode.toDataURL(msg, { width: 256, margin: 1 }).then(setQr).catch(() => setQr(""));
+  }, [open, msg]);
 
   async function copyMsg() {
     try {
@@ -74,19 +76,23 @@ export function WhatsAppQRDialog({
             Enviar alerta para o grupo WhatsApp
           </DialogTitle>
           <DialogDescription>
-            Escaneie o QR para entrar no grupo. Depois, cole a mensagem pronta abaixo.
+            Escaneie o QR para receber a mensagem do alerta no celular, depois
+            abra o grupo e cole para enviar.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           <div className="grid place-items-center rounded-lg bg-white p-4">
             {qr ? (
-              <img src={qr} alt="QR WhatsApp" className="h-56 w-56" />
+              <img src={qr} alt="QR mensagem do alerta" className="h-56 w-56" />
             ) : (
               <div className="grid h-56 w-56 place-items-center text-xs text-muted-foreground">
                 Gerando QR...
               </div>
             )}
           </div>
+          <p className="text-center text-[11px] text-muted-foreground -mt-2">
+            Ao escanear, o texto do alerta aparece pronto para colar no grupo.
+          </p>
           <Button asChild className="w-full">
             <a href={GRUPO_URL} target="_blank" rel="noreferrer">
               <ExternalLink className="mr-2 h-4 w-4" />
