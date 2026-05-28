@@ -40,12 +40,20 @@ const base = (route: string, extra = "") =>
 
 export async function fetchUnidades(): Promise<Unidade[]> {
   const r = await fetch(base("unidades"));
-  return r.json();
+  const j = await r.json().catch(() => []);
+  if (Array.isArray(j)) return j;
+  if (Array.isArray(j?.data)) return j.data;
+  if (Array.isArray(j?.unidades)) return j.unidades;
+  return [];
 }
 
 export async function fetchAlarmes(): Promise<Alarme[]> {
   const r = await fetch(base("alarmes"));
-  return r.json();
+  const j = await r.json().catch(() => []);
+  if (Array.isArray(j)) return j;
+  if (Array.isArray(j?.data)) return j.data;
+  if (Array.isArray(j?.alarmes)) return j.alarmes;
+  return [];
 }
 
 export async function fetchTelemetria(dispositivoId: number): Promise<Telemetria> {
