@@ -39,13 +39,25 @@ const base = (route: string, extra = "") =>
   `/api/proxy/_?route=${route}${extra}`;
 
 export async function fetchUnidades(): Promise<Unidade[]> {
-  const r = await fetch(base("unidades"));
-  return r.json();
+  try {
+    if (typeof window === "undefined") return [];
+    const r = await fetch(base("unidades"));
+    const data = await r.json();
+    return Array.isArray(data) ? data : [];
+  } catch {
+    return [];
+  }
 }
 
 export async function fetchAlarmes(): Promise<Alarme[]> {
-  const r = await fetch(base("alarmes"));
-  return r.json();
+  try {
+    if (typeof window === "undefined") return [];
+    const r = await fetch(base("alarmes"));
+    const data = await r.json();
+    return Array.isArray(data) ? data : [];
+  } catch {
+    return [];
+  }
 }
 
 export async function fetchTelemetria(dispositivoId: number): Promise<Telemetria> {
