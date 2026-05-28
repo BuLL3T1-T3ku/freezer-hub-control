@@ -364,7 +364,6 @@ function CriticosDialog({
           contaNm={whats.a.contaNm}
           lojaNm={whats.a.lojaNm}
           endereco={enrichLoja(whats.a.lojaId).endereco}
-          telefoneContato={enrichLoja(whats.a.lojaId).telefone}
           alarmeDesc={whats.a.alarmeDesc}
           dispositivoNm={whats.a.dispositivoNm}
           tempAtual={whats.temp}
