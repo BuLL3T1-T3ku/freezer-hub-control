@@ -22,9 +22,11 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TelemetriaDialog } from "@/components/TelemetriaDialog";
-import { AbrirChamadoDialog } from "@/components/AbrirChamadoDialog";
+import { AbrirChamadoDialog, type AbrirChamadoData } from "@/components/AbrirChamadoDialog";
 import { IncidenteDialog } from "@/components/IncidenteDialog";
 import { WhatsAppQRDialog } from "@/components/WhatsAppQRDialog";
+import { incidenteDoAlarme } from "@/api's/temperatura";
+import { TELEFONE_CHAMADOS, type Chamado } from "@/api's/chamados";
 import { MessageCircle } from "lucide-react";
 
 export const Route = createFileRoute("/_app/empresa/$contaId")({
@@ -38,16 +40,14 @@ function EmpresaPage() {
   const unidadesQ = useQuery({ queryKey: ["unidades"], queryFn: fetchUnidades });
   const alarmesQ = useQuery({ queryKey: ["alarmes"], queryFn: fetchAlarmes });
   const [tel, setTel] = useState<{ id: number; nome: string } | null>(null);
-  const [chamado, setChamado] = useState<{
-    lojaId: number;
-    lojaNome: string;
-    dispositivoId: number;
-    tag: string;
-    motivoIA: string;
-  } | null>(null);
+  const [chamado, setChamado] = useState<AbrirChamadoData | null>(null);
   const [showAllCriticos, setShowAllCriticos] = useState(false);
   const [incidente, setIncidente] = useState<Alarme | null>(null);
-  const [whats, setWhats] = useState<{ alarme: Alarme; tempAtual?: number } | null>(null);
+  const [whats, setWhats] = useState<
+    | { alarme: Alarme; tempAtual?: number; telefoneOverride?: string; titulo?: string }
+    | null
+  >(null);
+  const [chamadoQR, setChamadoQR] = useState<Chamado | null>(null);
 
   const data = useMemo(() => {
     const todas = [...(unidadesQ.data ?? []), ...customAsUnidades(loadCustom())];
@@ -272,15 +272,25 @@ function EmpresaPage() {
                         </Button>
                         <Button
                           size="sm"
-                          onClick={() =>
+                          onClick={() => {
+                            const inc = incidenteDoAlarme(
+                              a.alarmeId,
+                              a.grupoNm,
+                              a.subgrupoNm,
+                              a.alarmeDesc,
+                            );
                             setChamado({
+                              contaId: id,
+                              contaNm: data.nome,
                               lojaId: l.lojaId,
                               lojaNome: l.lojaNm,
+                              endereco: en.endereco,
                               dispositivoId: a.dispositivoId,
                               tag: a.dispositivoNm,
                               motivoIA: a.alarmeDesc,
-                            })
-                          }
+                              tempAtual: inc.tempAtual,
+                            });
+                          }}
                         >
                           Abrir chamado
                         </Button>
@@ -313,7 +323,22 @@ function EmpresaPage() {
         open={!!chamado}
         onOpenChange={(o) => !o && setChamado(null)}
         data={chamado}
+        onAberto={(c) => setChamadoQR(c)}
       />
+      {chamadoQR && (
+        <WhatsAppQRDialog
+          open={!!chamadoQR}
+          onOpenChange={(o) => !o && setChamadoQR(null)}
+          contaId={chamadoQR.contaId}
+          contaNm={chamadoQR.contaNm}
+          lojaNm={chamadoQR.lojaNm}
+          endereco={chamadoQR.endereco}
+          alarmeDesc={`Chamado ${chamadoQR.id} aberto — ${chamadoQR.motivo}`}
+          dispositivoNm={chamadoQR.tag}
+          telefoneContato={TELEFONE_CHAMADOS}
+          tempAtual={chamadoQR.tempAtual}
+        />
+      )}
       <IncidenteDialog
         open={!!incidente}
         onOpenChange={(o) => !o && setIncidente(null)}

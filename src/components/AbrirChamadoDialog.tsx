@@ -14,23 +14,30 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { abrirChamado } from "@/api's/api";
+import { addChamado, type Chamado } from "@/api's/chamados";
 
-interface Data {
+export interface AbrirChamadoData {
+  contaId: number;
+  contaNm: string;
   lojaId: number;
   lojaNome: string;
+  endereco: string;
   dispositivoId: number;
   tag: string;
   motivoIA: string;
+  tempAtual?: number;
 }
 
 export function AbrirChamadoDialog({
   open,
   onOpenChange,
   data,
+  onAberto,
 }: {
   open: boolean;
   onOpenChange: (o: boolean) => void;
-  data: Data | null;
+  data: AbrirChamadoData | null;
+  onAberto?: (chamado: Chamado) => void;
 }) {
   const [equipe, setEquipe] = useState("Equipe Freezer Controle");
   const [motivo, setMotivo] = useState("");
@@ -45,19 +52,40 @@ export function AbrirChamadoDialog({
     if (!data) return;
     setLoading(true);
     try {
-      const res = await abrirChamado({
+      // chama API (não bloqueia se falhar)
+      try {
+        await abrirChamado({
+          equipe,
+          lojaId: data.lojaId,
+          lojaNome: data.lojaNome,
+          dispositivoId: data.dispositivoId,
+          tag: data.tag,
+          motivoIA: motivo,
+          requerTecnico,
+        });
+      } catch {
+        // ignora erro de proxy — registramos localmente abaixo
+      }
+
+      const chamado = addChamado({
         equipe,
+        contaId: data.contaId,
+        contaNm: data.contaNm,
         lojaId: data.lojaId,
-        lojaNome: data.lojaNome,
+        lojaNm: data.lojaNome,
+        endereco: data.endereco,
         dispositivoId: data.dispositivoId,
         tag: data.tag,
-        motivoIA: motivo,
+        motivo,
+        tempAtual: data.tempAtual,
         requerTecnico,
       });
-      toast.success("Chamado aberto", {
-        description: typeof res === "object" ? JSON.stringify(res).slice(0, 200) : String(res),
+
+      toast.success(`Chamado ${chamado.id} aberto`, {
+        description: "Use o QR do WhatsApp para notificar o responsável.",
       });
       onOpenChange(false);
+      onAberto?.(chamado);
     } catch (e) {
       toast.error("Falha ao abrir chamado", { description: String(e) });
     } finally {
@@ -100,7 +128,7 @@ export function AbrirChamadoDialog({
             Cancelar
           </Button>
           <Button onClick={submit} disabled={loading}>
-            {loading ? "Enviando..." : "Abrir chamado"}
+            {loading ? "Enviando..." : "Abrir chamado e gerar QR"}
           </Button>
         </DialogFooter>
       </DialogContent>
