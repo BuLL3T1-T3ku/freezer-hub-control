@@ -323,7 +323,22 @@ function EmpresaPage() {
         open={!!chamado}
         onOpenChange={(o) => !o && setChamado(null)}
         data={chamado}
+        onAberto={(c) => setChamadoQR(c)}
       />
+      {chamadoQR && (
+        <WhatsAppQRDialog
+          open={!!chamadoQR}
+          onOpenChange={(o) => !o && setChamadoQR(null)}
+          contaId={chamadoQR.contaId}
+          contaNm={chamadoQR.contaNm}
+          lojaNm={chamadoQR.lojaNm}
+          endereco={chamadoQR.endereco}
+          alarmeDesc={`Chamado ${chamadoQR.id} aberto — ${chamadoQR.motivo}`}
+          dispositivoNm={chamadoQR.tag}
+          telefoneContato={TELEFONE_CHAMADOS}
+          tempAtual={chamadoQR.tempAtual}
+        />
+      )}
       <IncidenteDialog
         open={!!incidente}
         onOpenChange={(o) => !o && setIncidente(null)}
