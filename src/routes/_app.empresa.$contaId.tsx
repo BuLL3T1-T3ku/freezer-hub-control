@@ -22,9 +22,11 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TelemetriaDialog } from "@/components/TelemetriaDialog";
-import { AbrirChamadoDialog } from "@/components/AbrirChamadoDialog";
+import { AbrirChamadoDialog, type AbrirChamadoData } from "@/components/AbrirChamadoDialog";
 import { IncidenteDialog } from "@/components/IncidenteDialog";
 import { WhatsAppQRDialog } from "@/components/WhatsAppQRDialog";
+import { incidenteDoAlarme } from "@/api's/temperatura";
+import { TELEFONE_CHAMADOS, type Chamado } from "@/api's/chamados";
 import { MessageCircle } from "lucide-react";
 
 export const Route = createFileRoute("/_app/empresa/$contaId")({
