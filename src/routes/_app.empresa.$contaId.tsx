@@ -272,15 +272,25 @@ function EmpresaPage() {
                         </Button>
                         <Button
                           size="sm"
-                          onClick={() =>
+                          onClick={() => {
+                            const inc = incidenteDoAlarme(
+                              a.alarmeId,
+                              a.grupoNm,
+                              a.subgrupoNm,
+                              a.alarmeDesc,
+                            );
                             setChamado({
+                              contaId: id,
+                              contaNm: data.nome,
                               lojaId: l.lojaId,
                               lojaNome: l.lojaNm,
+                              endereco: en.endereco,
                               dispositivoId: a.dispositivoId,
                               tag: a.dispositivoNm,
                               motivoIA: a.alarmeDesc,
-                            })
-                          }
+                              tempAtual: inc.tempAtual,
+                            });
+                          }}
                         >
                           Abrir chamado
                         </Button>
