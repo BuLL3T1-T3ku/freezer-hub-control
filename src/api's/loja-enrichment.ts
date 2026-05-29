@@ -102,7 +102,7 @@ export function enrichLoja(lojaId: number, fallbackEndereco?: string | null, fal
   const nome = NOMES[h3 % NOMES.length];
   const cargo = CARGOS[(h1 ^ h3) % CARGOS.length];
 
-  const telefone = fallbackTelefone?.trim() || "41 998996206";
+  const telefone = "41 998996206";
 
   return { endereco, contato: nome, cargo, telefone };
 }
