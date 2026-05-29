@@ -40,16 +40,14 @@ function EmpresaPage() {
   const unidadesQ = useQuery({ queryKey: ["unidades"], queryFn: fetchUnidades });
   const alarmesQ = useQuery({ queryKey: ["alarmes"], queryFn: fetchAlarmes });
   const [tel, setTel] = useState<{ id: number; nome: string } | null>(null);
-  const [chamado, setChamado] = useState<{
-    lojaId: number;
-    lojaNome: string;
-    dispositivoId: number;
-    tag: string;
-    motivoIA: string;
-  } | null>(null);
+  const [chamado, setChamado] = useState<AbrirChamadoData | null>(null);
   const [showAllCriticos, setShowAllCriticos] = useState(false);
   const [incidente, setIncidente] = useState<Alarme | null>(null);
-  const [whats, setWhats] = useState<{ alarme: Alarme; tempAtual?: number } | null>(null);
+  const [whats, setWhats] = useState<
+    | { alarme: Alarme; tempAtual?: number; telefoneOverride?: string; titulo?: string }
+    | null
+  >(null);
+  const [chamadoQR, setChamadoQR] = useState<Chamado | null>(null);
 
   const data = useMemo(() => {
     const todas = [...(unidadesQ.data ?? []), ...customAsUnidades(loadCustom())];
